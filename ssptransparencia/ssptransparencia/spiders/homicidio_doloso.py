@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import scrapy
 
 from ssptransparencia.items import SsptransparenciaItem
@@ -7,9 +8,9 @@ from ssptransparencia.items import SsptransparenciaItemLoader
 
 def get_postback(a_selector):
     href = a_selector.xpath('@href').extract_first()
-    href = href.replace("javascript:__doPostBack('", '')
-    href = href[:href.find("'")]
-    return href
+    m = re.match(r"javascript:__doPostBack\('(.*)','(.*)'\)", href)
+    assert m
+    return {'__EVENTTARGET': m.group(1), '__EVENTARGUMENT': m.group(2)}
 
 
 class HomicidioDolosoSpider(scrapy.Spider):
@@ -22,14 +23,14 @@ class HomicidioDolosoSpider(scrapy.Spider):
     def parse(self, response):
         a = response.css('#cphBody_btnHomicicio')
         yield scrapy.FormRequest.from_response(response, formid='frmMain',
-            formdata={'__EVENTTARGET': get_postback(a)},
+            formdata=get_postback(a),
             dont_click=True, callback=self.parse_years)
 
     def parse_years(self, response):
         for a in response.css('#cphBody_divDados ul.anoNav li a'):
             year = a.xpath('./text()').extract_first()
             yield scrapy.FormRequest.from_response(response, formid='frmMain',
-                formdata={'__EVENTTARGET': get_postback(a)},
+                formdata=get_postback(a),
                 dont_click=True, callback=self.parse_months,
                 meta={'year': year})
 
@@ -38,8 +39,22 @@ class HomicidioDolosoSpider(scrapy.Spider):
         for a in response.css('#cphBody_divDados ul.mesNav li a'):
             month = a.xpath('./text()').extract_first()
             yield scrapy.FormRequest.from_response(response, formid='frmMain',
-                formdata={'__EVENTTARGET': get_postback(a)},
-                dont_click=True, callback=self.parse_items,
+                formdata=get_postback(a),
+                dont_click=True, callback=self.parse_pages,
+                meta={'year': year, 'month': month})
+
+    def parse_pages(self, response):
+        self.parse_items(response) # extract items from first page
+        year = response.meta['year']
+        month = response.meta['month']
+        for a in response.css('tr.pager_row table td a'):
+            if a.xpath('./text()').extract_first() == '...':
+                callback = self.parse_pages
+            else:
+                callback = self.parse_items
+            yield scrapy.FormRequest.from_response(response, formid='frmMain',
+                formdata=get_postback(a),
+                dont_click=True, callback=callback,
                 meta={'year': year, 'month': month})
 
     def parse_items(self, response):
