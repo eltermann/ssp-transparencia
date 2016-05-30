@@ -4,16 +4,59 @@ import scrapy
 from scrapy.loader.processors import MapCompose, TakeFirst
 
 
-class SsptransparenciaItem(scrapy.Item):
-    year = scrapy.Field()
-    month = scrapy.Field()
-    report_number = scrapy.Field()
-    report_type = scrapy.Field()
-    report_datetime = scrapy.Field()
-    city = scrapy.Field()
-    police_station = scrapy.Field()
-    occurrence_date = scrapy.Field()
-    occurrence_address = scrapy.Field()
+class SsptransparenciaBO(scrapy.Item):
+    id = scrapy.Field()
+    nav_ano = scrapy.Field()
+    nav_mes = scrapy.Field()
+    tabela_numero_bo = scrapy.Field()
+    tabela_tipo_bo = scrapy.Field()
+    tabela_cidade = scrapy.Field()
+    tabela_delegacia_elaboracao = scrapy.Field()
+    tabela_data_fato = scrapy.Field()
+    tabela_data_registro = scrapy.Field()
+    tabela_endereco_fato = scrapy.Field()
+    bo_dependencia = scrapy.Field()
+    bo_numero = scrapy.Field()
+    bo_iniciado = scrapy.Field()
+    bo_emitido = scrapy.Field()
+    bo_autoria = scrapy.Field()
+    bo_complementar_ao_rdo = scrapy.Field()
+    bo_desdobramentos = scrapy.Field()
+    bo_local_linha1 = scrapy.Field()
+    bo_local_linha2 = scrapy.Field()
+    bo_tipo_local = scrapy.Field()
+    bo_circunscricao = scrapy.Field()
+    bo_ocorrencia = scrapy.Field()
+    bo_comunicacao = scrapy.Field()
+    bo_elaboracao = scrapy.Field()
+    bo_flagrante = scrapy.Field()
+    bo_exames_requisitados = scrapy.Field()
+    bo_solucao = scrapy.Field()
+
+
+class SsptransparenciaNatureza(scrapy.Item):
+    bo_id = scrapy.Field()
+    especie = scrapy.Field()
+    natureza_linha1 = scrapy.Field()
+    natureza_linha2 = scrapy.Field()
+
+
+class SsptransparenciaVitima(scrapy.Item):
+    bo_id = scrapy.Field()
+    nome = scrapy.Field()
+    autor_vitima = scrapy.Field()
+    tipo = scrapy.Field()
+    rg = scrapy.Field()
+    natural_de = scrapy.Field()
+    nacionalidade = scrapy.Field()
+    sexo = scrapy.Field()
+    nascimento = scrapy.Field()
+    idade = scrapy.Field()
+    estado_civil = scrapy.Field()
+    profissao = scrapy.Field()
+    instrucao = scrapy.Field()
+    cutis = scrapy.Field()
+    naturezas_envolvidas = scrapy.Field()
 
 
 def map_month(s):
@@ -24,8 +67,19 @@ def map_month(s):
     return _m[month]
 
 
-class SsptransparenciaItemLoader(scrapy.loader.ItemLoader):
+class SsptransparenciaBOLoader(scrapy.loader.ItemLoader):
     default_output_processor = TakeFirst()
-    year_in = MapCompose(int)
-    month_in = MapCompose(map_month)
-    city_in = MapCompose(unicode.strip)
+    default_input_processor = MapCompose(unicode.strip)
+
+    nav_ano_in = MapCompose(unicode.strip, int)
+    nav_mes_in = MapCompose(unicode.strip, map_month)
+
+
+class SsptransparenciaNaturezaLoader(scrapy.loader.ItemLoader):
+    default_output_processor = TakeFirst()
+    default_input_processor = MapCompose(unicode.strip)
+
+
+class SsptransparenciaVitimaLoader(scrapy.loader.ItemLoader):
+    default_output_processor = TakeFirst()
+    default_input_processor = MapCompose(unicode.strip)
