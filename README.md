@@ -1,5 +1,3 @@
-![screenshot](https://cloud.githubusercontent.com/assets/569111/15650275/bd1b5a26-264d-11e6-8feb-88fcb752d4c6.png)
-
 A Secretaria de Segurança Pública do estado de São Paulo disponibiliza dados sob a forma de tabelas em páginas web.
 
 O presente software realiza a chamada "raspagem" desse conteúdo. Seu objetivo é automatizar a navegação nas páginas e gerar arquivos em um formato acessível para análise.
