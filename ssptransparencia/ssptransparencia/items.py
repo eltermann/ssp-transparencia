@@ -33,12 +33,31 @@ class SsptransparenciaBO(scrapy.Item):
     bo_exames_requisitados = scrapy.Field()
     bo_solucao = scrapy.Field()
 
+    # fields below may be removed sometime
+    bo_primeira_natureza_especie = scrapy.Field()
+    bo_primeira_natureza_linha1 = scrapy.Field()
+    bo_primeira_natureza_linha2 = scrapy.Field()
+    bo_primeira_vitima_nome = scrapy.Field()
+    bo_primeira_vitima_autor_vitima = scrapy.Field()
+    bo_primeira_vitima_tipo = scrapy.Field()
+    bo_primeira_vitima_rg = scrapy.Field()
+    bo_primeira_vitima_natural_de = scrapy.Field()
+    bo_primeira_vitima_nacionalidade = scrapy.Field()
+    bo_primeira_vitima_sexo = scrapy.Field()
+    bo_primeira_vitima_nascimento = scrapy.Field()
+    bo_primeira_vitima_idade = scrapy.Field()
+    bo_primeira_vitima_estado_civil = scrapy.Field()
+    bo_primeira_vitima_profissao = scrapy.Field()
+    bo_primeira_vitima_instrucao = scrapy.Field()
+    bo_primeira_vitima_cutis = scrapy.Field()
+    bo_primeira_vitima_naturezas_envolvidas = scrapy.Field()
+
 
 class SsptransparenciaNatureza(scrapy.Item):
     bo_id = scrapy.Field()
     especie = scrapy.Field()
-    natureza_linha1 = scrapy.Field()
-    natureza_linha2 = scrapy.Field()
+    linha1 = scrapy.Field()
+    linha2 = scrapy.Field()
 
 
 class SsptransparenciaVitima(scrapy.Item):

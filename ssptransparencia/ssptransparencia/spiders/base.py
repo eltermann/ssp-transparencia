@@ -80,8 +80,9 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
                 occurrence = m.group(2).strip()
                 station = m.group(3).strip()
                 body = '{ anoBO: %s, numBO: %s, delegacia: %s }' % (year, occurrence, station)
+                bo_id = '%s-%s-%s' % (year, occurrence, station)
                 meta = {
-                    'id': '%s-%s-%s' % (year, occurrence, station),
+                    'id': bo_id,
                     'nav_ano': year,
                     'nav_mes': month,
                     'tabela_numero_bo': _first(row, 'td[1]/a/text()'),
@@ -91,6 +92,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
                     'tabela_data_fato': _first(row, 'td[5]/text()'),
                     'tabela_data_registro': _first(row, 'td[6]/text()'),
                     'tabela_endereco_fato': _first(row, 'td[7]/text()'),
+                    'cookiejar': bo_id, # not a field; needed to keep sessions
                 }
                 yield scrapy.Request(url, method='POST', headers=headers, body=body, callback=self.open_occurrence, meta=meta)
         if not count:
@@ -101,8 +103,44 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
         yield scrapy.Request(url, dont_filter=True, callback=self.parse_occurrence, meta=response.meta)
 
     def parse_occurrence(self, response):
+        bo_id = response.meta['id']
+
+        natureza_item = None
+        for tr in response.xpath(u"//tr[@valign='top']/td/div[contains(., 'Espécie:')]/parent::td/parent::tr"):
+            l = SsptransparenciaNaturezaLoader(SsptransparenciaNatureza(), tr)
+            l.add_value('bo_id', bo_id)
+            l.add_xpath('especie', u"./td[2]//text()")
+            l.add_xpath('linha1', u"./following-sibling::tr[@valign='top'][1]/td[2]//text()")
+            l.add_xpath('linha2', u"./following-sibling::tr[@valign='top'][2]/td[2]//text()")
+            natureza_item = l.load_item()
+            #yield natureza_item
+            break # only load first item
+
+        vitima_item = None
+        for sel in response.xpath(u"//*[contains(text(), '(Vítima)')]|//*[contains(text(), '(Autor/Vitima)')]"):
+            line = ' '.join(sel.xpath('.//text()').extract())
+            l = SsptransparenciaVitimaLoader(SsptransparenciaVitima(), sel)
+            l.add_value('bo_id', bo_id)
+            l.add_value('nome', line, re=u'^(.*?)\(.*?V[ií]tima.*?\)')
+            l.add_value('autor_vitima', line, re=u'\((.*?V[ií]tima.*?)\)')
+            l.add_value('tipo', line, re=u'\(.*?V[ií]tima.*?\).*?\-(.*?)\-')
+            l.add_value('rg', line, re='RG: *(\d+\-[A-Z]{2})')
+            l.add_value('natural_de', line, re='Natural de: *(.*?\-[A-Z]{2})')
+            l.add_value('nacionalidade', line, re='Nacionalidade: *(.+?) ')
+            l.add_value('sexo', line, re='Sexo: *(.+?) ')
+            l.add_value('nascimento', line, re='Nascimento: *(.+?) ')
+            l.add_value('idade', line, re='(\d+) anos')
+            l.add_value('estado_civil', line, re='Estado Civil: *(.+?)\-')
+            l.add_value('profissao', line, re=u'Profissão: *(.+?)\-')
+            l.add_value('instrucao', line, re=u'Instrução: *(.+?)\-')
+            l.add_value('cutis', line, re=u'Cutis: *(.+?)\-|Cutis: *(.+?)$')
+            l.add_value('naturezas_envolvidas', line, re=u'Naturezas Envolvidas:(.+)')
+            vitima_item = l.load_item()
+            #yield vitima_item
+            break # only load first item
+
         l = SsptransparenciaBOLoader(SsptransparenciaBO(), response)
-        l.add_value('id', response.meta['id'])
+        l.add_value('id', bo_id)
         l.add_value('nav_ano', response.meta['nav_ano'])
         l.add_value('nav_mes', response.meta['nav_mes'])
         l.add_value('tabela_numero_bo', response.meta['tabela_numero_bo'])
@@ -129,35 +167,24 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
         l.add_xpath('bo_flagrante', u"//tr[@valign='top']/td/div[contains(., 'Flagrante:')]/parent::td/following-sibling::td[1]//text()")
         l.add_xpath('bo_exames_requisitados', u"//tr/td[contains(text(), 'Exames requisitados:')]//text()", re=u'Exames requisitados:(.*)')
         l.add_xpath('bo_solucao', u"//tr/td[contains(text(), 'Solução:')]//text()", re=u'Solução:(.*)')
+        if natureza_item:
+            l.add_value('bo_primeira_natureza_especie', natureza_item.get('especie', u''))
+            l.add_value('bo_primeira_natureza_linha1', natureza_item.get('linha1', u''))
+            l.add_value('bo_primeira_natureza_linha2', natureza_item.get('linha2', u''))
+        if vitima_item:
+            l.add_value('bo_primeira_vitima_nome', vitima_item.get('nome', u''))
+            l.add_value('bo_primeira_vitima_autor_vitima', vitima_item.get('autor_vitima', u''))
+            l.add_value('bo_primeira_vitima_tipo', vitima_item.get('tipo', u''))
+            l.add_value('bo_primeira_vitima_rg', vitima_item.get('rg', u''))
+            l.add_value('bo_primeira_vitima_natural_de', vitima_item.get('natural_de', u''))
+            l.add_value('bo_primeira_vitima_nacionalidade', vitima_item.get('nacionalidade', u''))
+            l.add_value('bo_primeira_vitima_sexo', vitima_item.get('sexo', u''))
+            l.add_value('bo_primeira_vitima_nascimento', vitima_item.get('nascimento', u''))
+            l.add_value('bo_primeira_vitima_idade', vitima_item.get('idade', u''))
+            l.add_value('bo_primeira_vitima_estado_civil', vitima_item.get('estado_civil', u''))
+            l.add_value('bo_primeira_vitima_profissao', vitima_item.get('profissao', u''))
+            l.add_value('bo_primeira_vitima_instrucao', vitima_item.get('instrucao', u''))
+            l.add_value('bo_primeira_vitima_cutis', vitima_item.get('cutis', u''))
+            l.add_value('bo_primeira_vitima_naturezas_envolvidas', vitima_item.get('naturezas_envolvidas', u''))
         bo_item = l.load_item()
         yield bo_item
-
-        for tr in response.xpath(u"//tr[@valign='top']/td/div[contains(., 'Espécie:')]/parent::td/parent::tr"):
-            l = SsptransparenciaNaturezaLoader(SsptransparenciaNatureza(), tr)
-            l.add_value('bo_id', bo_item['id'])
-            l.add_xpath('especie', u"./td[2]//text()")
-            l.add_xpath('natureza_linha1', u"./following-sibling::tr[@valign='top'][1]/td[2]//text()")
-            l.add_xpath('natureza_linha2', u"./following-sibling::tr[@valign='top'][2]/td[2]//text()")
-            natureza_item = l.load_item()
-            yield natureza_item
-
-        for sel in response.xpath(u"//*[contains(text(), '(Vítima)')]|//*[contains(text(), '(Autor/Vitima)')]"):
-            line = ' '.join(sel.xpath('.//text()').extract())
-            l = SsptransparenciaVitimaLoader(SsptransparenciaVitima(), sel)
-            l.add_value('bo_id', bo_item['id'])
-            l.add_value('nome', line, re=u'^(.*?)\(.*?Vítima.*?\)')
-            l.add_value('autor_vitima', line, re=u'\((.*?Vítima.*?)\)')
-            l.add_value('tipo', line, re=u'\(.*?Vítima.*?\).*?\-(.*?)\-')
-            l.add_value('rg', line, re='RG: *(\d+\-[A-Z]{2})')
-            l.add_value('natural_de', line, re='Natural de: *(.*?\-[A-Z]{2})')
-            l.add_value('nacionalidade', line, re='Nacionalidade: *(.+?) ')
-            l.add_value('sexo', line, re='Sexo: *(.+?) ')
-            l.add_value('nascimento', line, re='Nascimento: *(.+?) ')
-            l.add_value('idade', line, re='(\d+) anos')
-            l.add_value('estado_civil', line, re='Estado Civil: *(.+?)\-')
-            l.add_value('profissao', line, re=u'Profissão: *(.+?)\-')
-            l.add_value('instrucao', line, re=u'Instrução: *(.+?)\-')
-            l.add_value('cutis', line, re=u'Cutis: *(.+?)\-')
-            l.add_value('naturezas_envolvidas', line, re=u'Naturezas Envolvidas:(.+)')
-            vitima_item = l.load_item()
-            yield vitima_item
