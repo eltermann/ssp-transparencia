@@ -94,7 +94,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
                     'tabela_endereco_fato': _first(row, 'td[7]/text()'),
                     'cookiejar': bo_id, # not a field; needed to keep sessions
                 }
-                yield scrapy.Request(url, method='POST', headers=headers, body=body, callback=self.open_occurrence, meta=meta)
+                yield scrapy.Request(url, method='POST', headers=headers, body=body, callback=self.open_occurrence, meta=meta, dont_filter=True)
         if not count:
             self.logger.warning('No items found for %s-%s', year, month)
 
