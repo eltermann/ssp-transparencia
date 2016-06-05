@@ -8,6 +8,7 @@ class SsptransparenciaBO(scrapy.Item):
     id = scrapy.Field()
     nav_ano = scrapy.Field()
     nav_mes = scrapy.Field()
+    nav_menu_adicional = scrapy.Field()
     tabela_numero_bo = scrapy.Field()
     tabela_tipo_bo = scrapy.Field()
     tabela_cidade = scrapy.Field()

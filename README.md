@@ -57,6 +57,7 @@ No Linux, depois de clonar o projeto, os passos são:
 * $ scrapy crawl homicidio-doloso -t csv -o homicidio-doloso.csv
 * $ scrapy crawl latrocinio -t csv -o latrocinio.csv
 * $ scrapy crawl lesao-morte -t csv -o lesao-seguida-de-morte.csv
+* $ scrapy crawl oposicao-intervencao-policial -t csv -o oposicao-intervencao-policial.csv
 
 
 

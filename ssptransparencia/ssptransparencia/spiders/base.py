@@ -30,43 +30,40 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             self.logger.warning('No years found')
         for a in a_list:
             year = a.xpath('./text()').extract_first()
+            meta = dict(response.meta, **{'nav_ano': year})
             yield scrapy.FormRequest.from_response(response, formid='frmMain',
                 formdata=get_postback(a),
-                dont_click=True, callback=self.parse_months,
-                meta={'year': year})
+                dont_click=True, callback=self.parse_months, meta=meta)
 
     def parse_months(self, response):
-        year = response.meta['year']
+        year = response.meta['nav_ano']
         a_list = response.css('#cphBody_divDados ul.mesNav li a')
         if not a_list:
             self.logger.warning('No months found for %s', year)
         for a in a_list:
             month = a.xpath('./text()').extract_first()
+            meta = dict(response.meta, **{'nav_mes': month})
             yield scrapy.FormRequest.from_response(response, formid='frmMain',
-                formdata=get_postback(a),
-                dont_click=True, callback=self.parse_pages,
-                meta={'year': year, 'month': month})
+                formdata=get_postback(a), dont_click=True,
+                callback=self.parse_pages, meta=meta)
 
     def parse_pages(self, response):
         for item in self.parse_rows(response):
             # process rows from first page
             yield item
-        year = response.meta['year']
-        month = response.meta['month']
         for a in response.css('tr.pager_row table td a'):
             if a.xpath('./text()').extract_first() == '...':
                 callback = self.parse_pages
             else:
                 callback = self.parse_rows
             yield scrapy.FormRequest.from_response(response, formid='frmMain',
-                formdata=get_postback(a),
-                dont_click=True, callback=callback,
-                meta={'year': year, 'month': month})
+                formdata=get_postback(a), dont_click=True, callback=callback,
+                meta=response.meta)
 
     def parse_rows(self, response):
         count = 0
-        year = response.meta['year']
-        month = response.meta['month']
+        year = response.meta['nav_ano']
+        month = response.meta['nav_mes']
         url = 'http://www.ssp.sp.gov.br/transparenciassp/Consulta.aspx/AbrirBoletim'
         headers = {'Content-Type': 'application/json; charset=UTF-8;'}
         _first = lambda sel, xpath: sel.xpath(xpath).extract_first()
@@ -81,10 +78,8 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
                 station = m.group(3).strip()
                 body = '{ anoBO: %s, numBO: %s, delegacia: %s }' % (year, occurrence, station)
                 bo_id = '%s-%s-%s' % (year, occurrence, station)
-                meta = {
+                meta = dict(response.meta, **{
                     'id': bo_id,
-                    'nav_ano': year,
-                    'nav_mes': month,
                     'tabela_numero_bo': _first(row, 'td[1]/a/text()'),
                     'tabela_tipo_bo': _first(row, 'td[2]/text()'),
                     'tabela_cidade': _first(row, 'td[3]/text()'),
@@ -93,7 +88,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
                     'tabela_data_registro': _first(row, 'td[6]/text()'),
                     'tabela_endereco_fato': _first(row, 'td[7]/text()'),
                     'cookiejar': bo_id, # not a field; needed to keep sessions
-                }
+                })
                 yield scrapy.Request(url, method='POST', headers=headers, body=body, callback=self.open_occurrence, meta=meta, dont_filter=True)
         if not count:
             self.logger.warning('No items found for %s-%s', year, month)
@@ -141,15 +136,9 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
 
         l = SsptransparenciaBOLoader(SsptransparenciaBO(), response)
         l.add_value('id', bo_id)
-        l.add_value('nav_ano', response.meta['nav_ano'])
-        l.add_value('nav_mes', response.meta['nav_mes'])
-        l.add_value('tabela_numero_bo', response.meta['tabela_numero_bo'])
-        l.add_value('tabela_tipo_bo', response.meta['tabela_tipo_bo'])
-        l.add_value('tabela_cidade', response.meta['tabela_cidade'])
-        l.add_value('tabela_delegacia_elaboracao', response.meta['tabela_delegacia_elaboracao'])
-        l.add_value('tabela_data_fato', response.meta['tabela_data_fato'])
-        l.add_value('tabela_data_registro', response.meta['tabela_data_registro'])
-        l.add_value('tabela_endereco_fato', response.meta['tabela_endereco_fato'])
+        for key, value in response.meta.items():
+            if key.startswith('nav_') or key.startswith('tabela_'):
+                l.add_value(key, value)
         l.add_xpath('bo_dependencia', u"//div/div/span[contains(., 'Dependência:')]/parent::div/span[2]/text()")
         l.add_xpath('bo_numero', u"//div/div/span[contains(., 'Boletim No.:')]/parent::div/span[2]/text()")
         l.add_xpath('bo_iniciado', u"//div/div/span[contains(., 'Iniciado:')]/parent::div/span[2]/text()")
