@@ -44,7 +44,7 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 * bo_flagrante: indicador se houve flagrante, conforme aparece na página do BO
 * bo_exames_requisitados: exames requisitados, conforme aparece na página do BO
 * bo_solucao: solução, conforme aparece na página do BO
-* bo_numero_naturezas: quantidade de naturezas envolvidas (detalhadas na tabela "naturezas.csv")
+* bo_numero_naturezas: quantidade de naturezas envolvidas (detalhadas na tabela "naturezas-envolvidas.csv")
 * bo_numero_vitimas: quantidade de vítimas (detalhadas na tabela "vitimas.csv")
 
 ### Tabela de Vítimas (vitimas.csv)
