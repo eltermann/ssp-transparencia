@@ -6,6 +6,7 @@ from scrapy.loader.processors import MapCompose, TakeFirst
 
 class SsptransparenciaBO(scrapy.Item):
     id = scrapy.Field()
+    nav_natureza = scrapy.Field()
     nav_ano = scrapy.Field()
     nav_mes = scrapy.Field()
     nav_menu_adicional = scrapy.Field()
@@ -33,25 +34,8 @@ class SsptransparenciaBO(scrapy.Item):
     bo_flagrante = scrapy.Field()
     bo_exames_requisitados = scrapy.Field()
     bo_solucao = scrapy.Field()
-
-    # fields below may be removed sometime
-    bo_primeira_natureza_especie = scrapy.Field()
-    bo_primeira_natureza_linha1 = scrapy.Field()
-    bo_primeira_natureza_linha2 = scrapy.Field()
-    bo_primeira_vitima_nome = scrapy.Field()
-    bo_primeira_vitima_autor_vitima = scrapy.Field()
-    bo_primeira_vitima_tipo = scrapy.Field()
-    bo_primeira_vitima_rg = scrapy.Field()
-    bo_primeira_vitima_natural_de = scrapy.Field()
-    bo_primeira_vitima_nacionalidade = scrapy.Field()
-    bo_primeira_vitima_sexo = scrapy.Field()
-    bo_primeira_vitima_nascimento = scrapy.Field()
-    bo_primeira_vitima_idade = scrapy.Field()
-    bo_primeira_vitima_estado_civil = scrapy.Field()
-    bo_primeira_vitima_profissao = scrapy.Field()
-    bo_primeira_vitima_instrucao = scrapy.Field()
-    bo_primeira_vitima_cutis = scrapy.Field()
-    bo_primeira_vitima_naturezas_envolvidas = scrapy.Field()
+    bo_numero_naturezas = scrapy.Field()
+    bo_numero_vitimas = scrapy.Field()
 
 
 class SsptransparenciaNatureza(scrapy.Item):
@@ -93,6 +77,8 @@ class SsptransparenciaBOLoader(scrapy.loader.ItemLoader):
 
     nav_ano_in = MapCompose(unicode.strip, int)
     nav_mes_in = MapCompose(unicode.strip, map_month)
+    bo_numero_naturezas_in = MapCompose(unicode.strip, int)
+    bo_numero_vitimas_in = MapCompose(unicode.strip, int)
 
 
 class SsptransparenciaNaturezaLoader(scrapy.loader.ItemLoader):

@@ -16,10 +16,11 @@ NEWSPIDER_MODULE = 'ssptransparencia.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'ssptransparencia (+http://www.yourdomain.com)'
+USER_AGENT = 'ssptransparencia-crawler (+https://github.com/eltermann/ssp-transparencia)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS=32
+LOG_LEVEL='INFO'
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay

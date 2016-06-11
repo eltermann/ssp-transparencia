@@ -13,42 +13,72 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 
 ## Campos disponíveis
 
-### Campos iniciados em "nav_"
+### Tabela de BOs (bos.csv)
 
-![nav](https://cloud.githubusercontent.com/assets/569111/15796923/accfbf1a-29de-11e6-8f98-881d9076157b.png)
+* id: identificador do BO (referenciado nas outras tabelas)
+* nav_natureza: natureza da ocorrência na navegação (ex: homicidio-doloso, latrocinio, etc.)
+* nav_ano: ano na navegação das páginas
+* nav_mes: mês na navegação
+* nav_menu_adicional: em alguns casos (ex: morte-suspeita), indica o conteúdo do menu adicional
+* tabela_numero_bo: número do BO conforme aparece na tabela
+* tabela_tipo_bo: tipo do BO conforme aparece na tabela
+* tabela_cidade: cidade conforme aparece na tabela
+* tabela_delegacia_elaboracao: delegacia de elaboração conforme aparece na tabela
+* tabela_data_fato: data do fato conforme aparece na tabela
+* tabela_data_registro: data do registro conforme aparece na tabela
+* tabela_endereco_fato: endereço do fato conforme aparece na tabela
+* bo_dependencia: dependência conforme aparece na página do BO
+* bo_numero: número do BO conforme aparece na página do BO
+* bo_iniciado: horário em que foi iniciado, conforme aparece na página do BO
+* bo_emitido: horário em que foi emitido, conforme aparece na página do BO
+* bo_autoria: autoria do BO, conforme aparece na página do BO
+* bo_complementar_ao_rdo: informação sobre o BO ser complementar, conforme aparece na página do BO
+* bo_desdobramentos: desdobramentos, conforme aparece na página do BO
+* bo_local_linha1: primeira linha de informações do local da ocorrência, conforme aparece na página do BO
+* bo_local_linha2: segunda linha de informações do local da ocorrência, conforme aparece na página do BO
+* bo_tipo_local: tipo do local, conforme aparece na página do BO
+* bo_circunscricao: circunscrição, conforme aparece na página do BO
+* bo_ocorrencia: indicação do momento da ocorrência, conforme aparece na página do BO
+* bo_comunicacao: data e hora da comunicação da ocorrência, conforme aparece na página do BO
+* bo_elaboracao: data e hora da elaboração do boletim, conforme aparece na página do BO
+* bo_flagrante: indicador se houve flagrante, conforme aparece na página do BO
+* bo_exames_requisitados: exames requisitados, conforme aparece na página do BO
+* bo_solucao: solução, conforme aparece na página do BO
+* bo_numero_naturezas: quantidade de naturezas envolvidas (detalhadas na tabela "naturezas.csv")
+* bo_numero_vitimas: quantidade de vítimas (detalhadas na tabela "vitimas.csv")
 
-Representam o ano e mês.
+### Tabela de Vítimas (vitimas.csv)
 
-### Campos iniciados em "tabela_"
+* bo_id: identificador do BO
+* nome: Nome da vítima
+* autor_vitima: Indicador se pessoa é "Vítima" ou "Autor e Vítima"
+* tipo: ex: Vítima Fatal
+* rg: número do RG
+* natural_de: cidade de origem da vítima
+* nacionalidade: nacionalidade da vítima
+* sexo: sexo da vítima
+* nascimento: data de nascimento da vítima
+* idade: idade de vítima
+* estado_civil: estado civil da vítima
+* profissao: profissão da vítima
+* instrucao: nível de instrução da vítima
+* cutis: informação sobre a pele da vítima
+* naturezas_envolvidas: naturezas envolvidas relacionadas à vítima
 
-![tabela](https://cloud.githubusercontent.com/assets/569111/15796924/acecdd34-29de-11e6-9976-3077238fa967.png)
 
-Representam os campos da tabela.
+### Tabela de Naturezas envolvidas (naturezas-envolvidas.csv)
 
-### Campos iniciados em "bo_"
-
-![bo](https://cloud.githubusercontent.com/assets/569111/15796938/eab5b62c-29de-11e6-82fe-4bccd4e4430e.png)
-
-Representam informações contidas no BO.
-
-### Campos iniciados em "bo_primeira_natureza_"
-
-![bo_primeiranatureza](https://cloud.githubusercontent.com/assets/569111/15796909/64477184-29de-11e6-84e0-f344d39a4f8e.png)
-
-Representam informações **apenas** da primeira natureza do BO.
-
-### Campos iniciados em "bo_primeira_vitima_"
-
-![bo_primeiravitima](https://cloud.githubusercontent.com/assets/569111/15796910/6463a264-29de-11e6-8faf-c52832dd9dcf.png)
-
-Representam as informações **apenas** da primeira vítima do BO.
+* bo_id: identificador do BO
+* especie: espécie da natureza envolvida (ex: "Título II - Patrimônio (arts. 155 a 183)")
+* linha1: primeira linha de informações da natureza (ex: "Roubo (art. 157)")
+* linha2: segunda linha de informações da natureza (ex: "Consumado")
 
 
 ## Executando o programa
 
 ### Requerimentos
 
-* python 2.7
+* python
 * scrapy 1.1.0
 
 ### Comandos
@@ -56,10 +86,9 @@ Representam as informações **apenas** da primeira vítima do BO.
 No Linux, depois de clonar o projeto, os passos são:
 
 * $ cd ssptransparencia
-* $ scrapy crawl homicidio-doloso -t csv -o homicidio-doloso.csv
-* $ scrapy crawl latrocinio -t csv -o latrocinio.csv
-* $ scrapy crawl lesao-morte -t csv -o lesao-seguida-de-morte.csv
-* $ scrapy crawl oposicao-intervencao-policial -t csv -o oposicao-intervencao-policial.csv
+* $ scrapy crawl ssptransparencia -a tabela="bos" -t csv -o bos.csv
+* $ scrapy crawl ssptransparencia -a tabela="vitimas" -t csv -o vitimas.csv
+* $ scrapy crawl ssptransparencia -a tabela="naturezas-envolvidas" -t csv -o vitimas.csv
 
 
 ## Autores
