@@ -128,7 +128,6 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
         bo_id = response.meta['id']
 
         natureza_count = 0
-        natureza_first_item = None
         natureza_item = None
         for tr in response.xpath(u"//tr[@valign='top']/td/div[contains(., 'Espécie:')]/parent::td/parent::tr"):
             natureza_count += 1
@@ -138,13 +137,10 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             l.add_xpath('linha1', u"./following-sibling::tr[@valign='top'][1]/td[2]//text()")
             l.add_xpath('linha2', u"./following-sibling::tr[@valign='top'][2]/td[2]//text()")
             natureza_item = l.load_item()
-            if natureza_count == 1:
-                natureza_first_item = natureza_item
             if self.tabela == 'naturezas-envolvidas':
                 yield natureza_item
 
         vitima_count = 0
-        vitima_first_item = None
         vitima_item = None
         for sel in response.xpath(u"//*[contains(text(), '(Vítima)')]|//*[contains(text(), '(Autor/Vitima)')]"):
             vitima_count += 1
@@ -166,8 +162,6 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             l.add_value('cutis', line, re=u'Cutis: *(.+?)\-|Cutis: *(.+?)$')
             l.add_value('naturezas_envolvidas', line, re=u'Naturezas Envolvidas:(.+)')
             vitima_item = l.load_item()
-            if vitima_count == 1:
-                vitima_first_item = vitima_item
             if self.tabela == 'vitimas':
                 yield vitima_item
 
