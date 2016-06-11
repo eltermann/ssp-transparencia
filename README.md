@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/20978/eltermann/ssp-transparencia.svg)](https://zenodo.org/badge/latestdoi/20978/eltermann/ssp-transparencia)
+
 A Secretaria de Segurança Pública do estado de São Paulo disponibiliza dados sob a forma de tabelas em páginas web.
 
 O presente software realiza a chamada "raspagem" desse conteúdo. Seu objetivo é automatizar a navegação nas páginas e gerar arquivos em um formato acessível para análise.
