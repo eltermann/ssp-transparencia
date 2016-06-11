@@ -60,6 +60,11 @@ No Linux, depois de clonar o projeto, os passos são:
 * $ scrapy crawl oposicao-intervencao-policial -t csv -o oposicao-intervencao-policial.csv
 
 
+## Autores
+
+* Felipe Eltermann Braga - FEEC/UNICAMP - http://lattes.cnpq.br/9016415024825203
+* Silas Nogueira de Melo - IG/UNICAMP - http://lattes.cnpq.br/9875457749739729
+
 
 ## Dúvidas e contato
 
