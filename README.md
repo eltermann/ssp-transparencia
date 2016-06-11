@@ -88,7 +88,7 @@ No Linux, depois de clonar o projeto, os passos são:
 * $ cd ssptransparencia
 * $ scrapy crawl ssptransparencia -a tabela="bos" -t csv -o bos.csv
 * $ scrapy crawl ssptransparencia -a tabela="vitimas" -t csv -o vitimas.csv
-* $ scrapy crawl ssptransparencia -a tabela="naturezas-envolvidas" -t csv -o vitimas.csv
+* $ scrapy crawl ssptransparencia -a tabela="naturezas-envolvidas" -t csv -o naturezas-envolvidas.csv
 
 
 ## Autores
