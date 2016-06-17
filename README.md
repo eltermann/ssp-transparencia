@@ -85,10 +85,9 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 
 No Linux, depois de clonar o projeto, os passos são:
 
+#### Executando o scrapy diretamente
 * $ cd ssptransparencia
-* $ scrapy crawl ssptransparencia -a tabela="bos" -t csv -o bos.csv
-* $ scrapy crawl ssptransparencia -a tabela="vitimas" -t csv -o vitimas.csv
-* $ scrapy crawl ssptransparencia -a tabela="naturezas-envolvidas" -t csv -o naturezas-envolvidas.csv
+* $ scrapy crawl ssptransparencia -a target_dir=/caminho/para/destino
 
 
 ## Autores

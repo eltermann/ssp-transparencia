@@ -19,10 +19,8 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
         'http://www.ssp.sp.gov.br/transparenciassp/Consulta.aspx',
     )
 
-    def __init__(self, tabela='bos'):
-        allowed = ['bos', 'vitimas', 'naturezas-envolvidas']
-        assert tabela in allowed, 'Invalid  `tabela` argument. Allowed values: %s' % allowed
-        self.tabela = tabela
+    def __init__(self, target_dir='.'):
+        self.target_dir = target_dir
 
     def parse(self, response):
         first_lvl_links = [
@@ -137,8 +135,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             l.add_xpath('linha1', u"./following-sibling::tr[@valign='top'][1]/td[2]//text()")
             l.add_xpath('linha2', u"./following-sibling::tr[@valign='top'][2]/td[2]//text()")
             natureza_item = l.load_item()
-            if self.tabela == 'naturezas-envolvidas':
-                yield natureza_item
+            yield natureza_item
 
         vitima_count = 0
         vitima_item = None
@@ -162,33 +159,31 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             l.add_value('cutis', line, re=u'Cutis: *(.+?)\-|Cutis: *(.+?)$')
             l.add_value('naturezas_envolvidas', line, re=u'Naturezas Envolvidas:(.+)')
             vitima_item = l.load_item()
-            if self.tabela == 'vitimas':
-                yield vitima_item
+            yield vitima_item
 
-        if self.tabela == 'bos':
-            l = SsptransparenciaBOLoader(SsptransparenciaBO(), response)
-            l.add_value('id', bo_id)
-            for key, value in response.meta.items():
-                if key.startswith('nav_') or key.startswith('tabela_'):
-                    l.add_value(key, value)
-            l.add_xpath('bo_dependencia', u"//div/div/span[contains(., 'Dependência:')]/parent::div/span[2]/text()")
-            l.add_xpath('bo_numero', u"//div/div/span[contains(., 'Boletim No.:')]/parent::div/span[2]/text()")
-            l.add_xpath('bo_iniciado', u"//div/div/span[contains(., 'Iniciado:')]/parent::div/span[2]/text()")
-            l.add_xpath('bo_emitido', u"//div/div/span[contains(., 'Emitido:')]/parent::div/span[5]/text()")
-            l.add_xpath('bo_autoria', u"//div/div/span[contains(., 'Boletim de Ocorrencia de Autoria')]/parent::div/span[2]//text()")
-            l.add_xpath('bo_complementar_ao_rdo', u"//tr[@valign='top'][contains(., 'Complementar ao R.D.O. nº:')]/following-sibling::tr[@valign='top'][1]//text()")
-            l.add_xpath('bo_desdobramentos', u"//tr[@valign='top']/td/div[contains(., 'Desdobramentos:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_local_linha1', u"//tr[@valign='top']/td/div[contains(., 'Local:')][not(contains(., 'Tipo'))]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_local_linha2', u"//tr[@valign='top']/td/div[contains(., 'Local:')][not(contains(., 'Tipo'))]/parent::td/parent::tr/following-sibling::tr[@valign='top'][1]/td[2]//text()")
-            l.add_xpath('bo_tipo_local', u"//tr[@valign='top']/td/div[contains(., 'Tipo de Local:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_circunscricao', u"//tr[@valign='top']/td/div[contains(., 'Circunscrição:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_ocorrencia', u"//tr[@valign='top']/td/div[contains(., 'Ocorrência:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_comunicacao', u"//tr[@valign='top']/td/div[contains(., 'Comunicação:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_elaboracao', u"//tr[@valign='top']/td/div[contains(., 'Elaboração:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_flagrante', u"//tr[@valign='top']/td/div[contains(., 'Flagrante:')]/parent::td/following-sibling::td[1]//text()")
-            l.add_xpath('bo_exames_requisitados', u"//tr/td[contains(text(), 'Exames requisitados:')]//text()", re=u'Exames requisitados:(.*)')
-            l.add_xpath('bo_solucao', u"//tr/td[contains(text(), 'Solução:')]//text()", re=u'Solução:(.*)')
-            l.add_value('bo_numero_naturezas', unicode(natureza_count))
-            l.add_value('bo_numero_vitimas', unicode(vitima_count))
-            bo_item = l.load_item()
-            yield bo_item
+        l = SsptransparenciaBOLoader(SsptransparenciaBO(), response)
+        l.add_value('id', bo_id)
+        for key, value in response.meta.items():
+            if key.startswith('nav_') or key.startswith('tabela_'):
+                l.add_value(key, value)
+        l.add_xpath('bo_dependencia', u"//div/div/span[contains(., 'Dependência:')]/parent::div/span[2]/text()")
+        l.add_xpath('bo_numero', u"//div/div/span[contains(., 'Boletim No.:')]/parent::div/span[2]/text()")
+        l.add_xpath('bo_iniciado', u"//div/div/span[contains(., 'Iniciado:')]/parent::div/span[2]/text()")
+        l.add_xpath('bo_emitido', u"//div/div/span[contains(., 'Emitido:')]/parent::div/span[5]/text()")
+        l.add_xpath('bo_autoria', u"//div/div/span[contains(., 'Boletim de Ocorrencia de Autoria')]/parent::div/span[2]//text()")
+        l.add_xpath('bo_complementar_ao_rdo', u"//tr[@valign='top'][contains(., 'Complementar ao R.D.O. nº:')]/following-sibling::tr[@valign='top'][1]//text()")
+        l.add_xpath('bo_desdobramentos', u"//tr[@valign='top']/td/div[contains(., 'Desdobramentos:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_local_linha1', u"//tr[@valign='top']/td/div[contains(., 'Local:')][not(contains(., 'Tipo'))]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_local_linha2', u"//tr[@valign='top']/td/div[contains(., 'Local:')][not(contains(., 'Tipo'))]/parent::td/parent::tr/following-sibling::tr[@valign='top'][1]/td[2]//text()")
+        l.add_xpath('bo_tipo_local', u"//tr[@valign='top']/td/div[contains(., 'Tipo de Local:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_circunscricao', u"//tr[@valign='top']/td/div[contains(., 'Circunscrição:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_ocorrencia', u"//tr[@valign='top']/td/div[contains(., 'Ocorrência:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_comunicacao', u"//tr[@valign='top']/td/div[contains(., 'Comunicação:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_elaboracao', u"//tr[@valign='top']/td/div[contains(., 'Elaboração:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_flagrante', u"//tr[@valign='top']/td/div[contains(., 'Flagrante:')]/parent::td/following-sibling::td[1]//text()")
+        l.add_xpath('bo_exames_requisitados', u"//tr/td[contains(text(), 'Exames requisitados:')]//text()", re=u'Exames requisitados:(.*)')
+        l.add_xpath('bo_solucao', u"//tr/td[contains(text(), 'Solução:')]//text()", re=u'Solução:(.*)')
+        l.add_value('bo_numero_naturezas', unicode(natureza_count))
+        l.add_value('bo_numero_vitimas', unicode(vitima_count))
+        bo_item = l.load_item()
+        yield bo_item
