@@ -76,18 +76,28 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 
 ## Executando o programa
 
-### Requerimentos
+A execução do crawling pode demorar alguns dias.
 
-* python
-* scrapy 1.1.0
 
-### Comandos
+### Opção 1 - via Docker
 
-No Linux, depois de clonar o projeto, os passos são:
+Requerimentos: docker
 
-#### Executando o scrapy diretamente
+Comandos:
+
+* $ mkdir -p /caminho/destino/dos/arquivos
+* $ docker build -f Dockerfile -t eltermann/ssp-transparencia:master .
+* $ docker run -v /caminho/destino/dos/arquivos:/tmp/target_dir eltermann/ssp-transparencia:master
+
+### Opção 2 - diretamente
+
+Requerimentos: python e scrapy 1.1.0
+
+Comandos:
+
+* $ mkdir -p /caminho/destino/dos/arquivos
 * $ cd ssptransparencia
-* $ scrapy crawl ssptransparencia -a target_dir=/caminho/para/destino
+* $ scrapy crawl ssptransparencia -a target_dir=/caminho/destino/dos/arquivos
 
 
 ## Autores
