@@ -21,10 +21,10 @@ class SsptransparenciaDuplicatesPipeline(object):
             _id = item['id']
         elif isinstance(item, SsptransparenciaVitima):
             key = 'vitimas'
-            _id = item['bo_id'] + '::' + item['count']
+            _id = '%s::%s' % (item['bo_id'], item['count'])
         elif isinstance(item, SsptransparenciaNatureza):
             key = 'naturezas'
-            _id = item['bo_id'] + '::' + item['count']
+            _id = '%s::%s' % (item['bo_id'], item['count'])
 
         if _id in self.ids_seen[key]:
             raise DropItem('Duplicate item found: %s' % item)

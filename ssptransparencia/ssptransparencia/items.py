@@ -87,11 +87,11 @@ class SsptransparenciaNaturezaLoader(scrapy.loader.ItemLoader):
     default_output_processor = TakeFirst()
     default_input_processor = MapCompose(unicode.strip)
 
-    count_in = MapCompose(unicode.strip, int)
+    count_in = MapCompose(int)
 
 
 class SsptransparenciaVitimaLoader(scrapy.loader.ItemLoader):
     default_output_processor = TakeFirst()
     default_input_processor = MapCompose(unicode.strip)
 
-    count_in = MapCompose(unicode.strip, int)
+    count_in = MapCompose(int)
