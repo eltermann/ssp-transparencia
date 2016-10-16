@@ -50,6 +50,7 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 ### Tabela de Vítimas (vitimas.csv)
 
 * bo_id: identificador do BO
+* count: contagem da vítima para o BO em questão
 * nome: Nome da vítima
 * autor_vitima: Indicador se pessoa é "Vítima" ou "Autor e Vítima"
 * tipo: ex: Vítima Fatal
@@ -69,6 +70,7 @@ Para facilitar o acesso aos dados, o conteúdo extraído é disponibilizado para
 ### Tabela de Naturezas envolvidas (naturezas-envolvidas.csv)
 
 * bo_id: identificador do BO
+* count: contagem da natureza envolvida para o BO em questão
 * especie: espécie da natureza envolvida (ex: "Título II - Patrimônio (arts. 155 a 183)")
 * linha1: primeira linha de informações da natureza (ex: "Roubo (art. 157)")
 * linha2: segunda linha de informações da natureza (ex: "Consumado")
