@@ -1,9 +1,36 @@
 # -*- coding: utf-8 -*-
 from os.path import join
 from scrapy import signals
+from scrapy.exceptions import DropItem
 from scrapy.exporters import CsvItemExporter
 
 from ssptransparencia.items import *
+
+
+class SsptransparenciaDuplicatesPipeline(object):
+    def __init__(self):
+        self.ids_seen = {
+            'bos': set(),
+            'vitimas': set(),
+            'naturezas': set(),
+        }
+
+    def process_item(self, item, spider):
+        if isinstance(item, SsptransparenciaBO):
+            key = 'bos'
+            _id = item['id']
+        elif isinstance(item, SsptransparenciaVitima):
+            key = 'vitimas'
+            _id = item['bo_id'] + '::' + item['count']
+        elif isinstance(item, SsptransparenciaNatureza):
+            key = 'naturezas'
+            _id = item['bo_id'] + '::' + item['count']
+
+        if _id in self.ids_seen[key]:
+            raise DropItem('Duplicate item found: %s' % item)
+        else:
+            self.ids_seen[key].add(_id)
+            return item
 
 
 class SsptransparenciaExportPipeline(object):

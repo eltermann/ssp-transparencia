@@ -131,6 +131,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             natureza_count += 1
             l = SsptransparenciaNaturezaLoader(SsptransparenciaNatureza(), tr)
             l.add_value('bo_id', bo_id)
+            l.add_value('count', natureza_count)
             l.add_xpath('especie', u"./td[2]//text()")
             l.add_xpath('linha1', u"./following-sibling::tr[@valign='top'][1]/td[2]//text()")
             l.add_xpath('linha2', u"./following-sibling::tr[@valign='top'][2]/td[2]//text()")
@@ -144,6 +145,7 @@ class SsptransparenciaBaseSpider(scrapy.Spider):
             line = ' '.join(sel.xpath('.//text()').extract())
             l = SsptransparenciaVitimaLoader(SsptransparenciaVitima(), sel)
             l.add_value('bo_id', bo_id)
+            l.add_value('count', vitima_count)
             l.add_value('nome', line, re=u'^(.*?)\(.*?V[ií]tima.*?\)')
             l.add_value('autor_vitima', line, re=u'\((.*?V[ií]tima.*?)\)')
             l.add_value('tipo', line, re=u'\(.*?V[ií]tima.*?\).*?\-(.*?)\-')

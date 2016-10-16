@@ -40,6 +40,7 @@ class SsptransparenciaBO(scrapy.Item):
 
 class SsptransparenciaNatureza(scrapy.Item):
     bo_id = scrapy.Field()
+    count = scrapy.Field()
     especie = scrapy.Field()
     linha1 = scrapy.Field()
     linha2 = scrapy.Field()
@@ -47,6 +48,7 @@ class SsptransparenciaNatureza(scrapy.Item):
 
 class SsptransparenciaVitima(scrapy.Item):
     bo_id = scrapy.Field()
+    count = scrapy.Field()
     nome = scrapy.Field()
     autor_vitima = scrapy.Field()
     tipo = scrapy.Field()
